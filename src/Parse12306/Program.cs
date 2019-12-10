@@ -190,10 +190,11 @@ namespace Parse12306
                 List<string> typeList = dateObj.Properties().Select(p => p.Name).ToList();
                 foreach (string type in typeList)
                 {
-                    //type = "C,D,G,K,O,T,Z", we just get high speed trains. It means "C,D,G"
-                    if ("CDG".Contains(type))
-                    {
-                        JArray dataArray = (JArray)dateObj[type];
+					//type = "C,D,G,K,O,T,Z", we just get high speed trains. It means "C,D,G"
+					// User may also comment the 'if' clause or modify the "CDG" to your own demand.
+					if ("CDG".Contains(type))
+					{
+						JArray dataArray = (JArray)dateObj[type];
                         foreach (JObject data in dataArray)
                         {
                             string trainCode = data["station_train_code"].ToString(); //D1(北京-沈阳)
@@ -221,7 +222,8 @@ namespace Parse12306
                     List<string> outputList = new List<string>();
                     foreach (Train train in trainList)
                     {
-                        outputList.Add(train.ToBaseCSV());
+						String tmp = train.ToBaseCSV();
+						if (tmp != String.Empty) outputList.Add(tmp);
                     }
                     WriteFile(GetStepFile(STEP_4, date + ".txt"), string.Join("\r\n", outputList.ToArray()));
                     Console.WriteLine("Output " + date + ".txt");
@@ -641,7 +643,8 @@ namespace Parse12306
 
         public string ToBaseCSV()
         {
-            List<string> list = new List<string>();
+			if (StartStation == null || EndStation == null) return String.Empty;
+			List<string> list = new List<string>();
             list.Add(Type);
             list.Add(Name);
             list.Add(TrainNo);
